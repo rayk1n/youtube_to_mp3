@@ -1,10 +1,10 @@
 import yt_dlp
+import os
 
-def main():
-    URLS = ['https://youtu.be/O0Cw1SLdxxE?si=VM-2SK2tbzDDvAu4']
-
+def download_mp3(url: str) -> str:
     ydl_opts = {
         'format': 'bestaudio/best',
+        'outtmpl': 'downloads/%(title)s.%(ext)s',
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
@@ -12,9 +12,9 @@ def main():
         }],
     }
 
+    os.makedirs("downloads", exist_ok=True)
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        ydl.download(URLS)
-
-if __name__ == "__main__":
-    main()
+        info = ydl.extract_info(url, download=True)
+        filename = ydl.prepare_filename(info)
+        return filename.replace('.webm', '.mp3').replace('.m4a', '.mp3')
